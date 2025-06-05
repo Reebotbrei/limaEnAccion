@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SosScreen extends StatelessWidget {
   const SosScreen({super.key});
@@ -11,23 +12,34 @@ class SosScreen extends StatelessWidget {
         title: const Text('Líneas de Emergencia'),
         leading: BackButton(
           onPressed: () {
-           Navigator.of(context).pop();
+            Navigator.of(context).pop();
           },
         ),
-
       ),
       backgroundColor: const Color(0xFFFFF3E0),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
-        children: [
+        children: const [
           EmergencyCard(
             title: 'Sistema de Atención Móvil de Urgencia SAMU',
             number: '106',
             icon: Icons.local_hospital,
           ),
-          EmergencyCard(title: 'Bomberos', number: '116', icon: Icons.fire_truck),
-          EmergencyCard(title: 'Policía Nacional del Perú', number: '105', icon: Icons.local_police),
-          EmergencyCard(title: 'Defensa Civil', number: '115', icon: Icons.shield),
+          EmergencyCard(
+            title: 'Bomberos',
+            number: '116',
+            icon: Icons.fire_truck,
+          ),
+          EmergencyCard(
+            title: 'Policía Nacional del Perú',
+            number: '105',
+            icon: Icons.local_police,
+          ),
+          EmergencyCard(
+            title: 'Defensa Civil',
+            number: '115',
+            icon: Icons.shield,
+          ),
         ],
       ),
     );
@@ -54,9 +66,19 @@ class EmergencyCard extends StatelessWidget {
       child: ListTile(
         leading: Icon(icon, color: Colors.orange, size: 36),
         title: Text(title),
-        subtitle: Text(number, style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-        onTap: () {
-          // Aquí podrías abrir marcador o copiar el número
+        subtitle: Text(
+          number,
+          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+        ),
+        onTap: () async {
+          final Uri phoneUri = Uri(scheme: 'tel', path: number);
+          if (await canLaunchUrl(phoneUri)) {
+            await launchUrl(phoneUri);
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('No se pudo iniciar la llamada')),
+            );
+          }
         },
       ),
     );
