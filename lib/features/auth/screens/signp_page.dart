@@ -1,6 +1,8 @@
+import 'package:aplicacion_movil/objetos/lista_usuarios.dart';
+import 'package:aplicacion_movil/objetos/usuario.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import 'package:aplicacion_movil/objetos/lista_usuarios.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/login_button.dart';
 
@@ -13,9 +15,16 @@ class SignpPage extends StatefulWidget {
 
 class _SignpPageState extends State<SignpPage> {
   final _formKey = GlobalKey<FormState>();
+  
   final _nameController = TextEditingController();
+  final nombre = TextEditingController().text;
+
   final _emailController = TextEditingController();
+  final email = TextEditingController().text;
+  
   final _passwordController = TextEditingController();
+  final contra = TextEditingController().text;
+
   final _confirmPasswordController = TextEditingController();
 
   @override
@@ -30,7 +39,8 @@ class _SignpPageState extends State<SignpPage> {
   void _onSignup() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cuenta creada con éxito. Inicia sesión.')),
+        const SnackBar(
+            content: Text('Cuenta creada con éxito. Inicia sesión.')),
       );
       Navigator.pop(context); // ← volver a login
     }
@@ -50,11 +60,15 @@ class _SignpPageState extends State<SignpPage> {
           key: _formKey,
           child: Column(
             children: [
-              Icon(Icons.person_add_alt_1_outlined, size: 80, color: Colors.orange[700]),
+              Icon(Icons.person_add_alt_1_outlined,
+                  size: 80, color: Colors.orange[700]),
               const SizedBox(height: 16),
               Text(
                 'Regístrate para continuar',
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.orange[800]),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange[800]),
               ),
               const SizedBox(height: 32),
               CustomTextField(
@@ -63,7 +77,8 @@ class _SignpPageState extends State<SignpPage> {
                 prefixIcon: Icons.person_outline,
                 keyboardType: TextInputType.name,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Por favor ingresa tu nombre';
+                  if (value == null || value.isEmpty)
+                    return 'Por favor ingresa tu nombre';
                   return null;
                 },
               ),
@@ -74,9 +89,11 @@ class _SignpPageState extends State<SignpPage> {
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Por favor ingresa tu correo';
+                  if (value == null || value.isEmpty)
+                    return 'Por favor ingresa tu correo';
                   final gmailRegex = RegExp(r'^[\w-\.]+@gmail\.com$');
-                  if (!gmailRegex.hasMatch(value)) return 'Ingresa un correo válido de Gmail';
+                  if (!gmailRegex.hasMatch(value))
+                    return 'Ingresa un correo válido de Gmail';
                   return null;
                 },
               ),
@@ -87,8 +104,10 @@ class _SignpPageState extends State<SignpPage> {
                 prefixIcon: Icons.lock_outline,
                 obscureText: true,
                 validator: (value) {
-                  if (value == null || value.isEmpty) return 'Por favor ingresa una contraseña';
-                  if (value.length < 6) return 'La contraseña debe tener al menos 6 caracteres';
+                  if (value == null || value.isEmpty)
+                    return 'Por favor ingresa una contraseña';
+                  if (value.length < 6)
+                    return 'La contraseña debe tener al menos 6 caracteres';
                   return null;
                 },
               ),
@@ -99,7 +118,8 @@ class _SignpPageState extends State<SignpPage> {
                 prefixIcon: Icons.lock_outline,
                 obscureText: true,
                 validator: (value) {
-                  if (value != _passwordController.text) return 'Las contraseñas no coinciden';
+                  if (value != _passwordController.text)
+                    return 'Las contraseñas no coinciden';
                   return null;
                 },
               ),
@@ -116,11 +136,13 @@ class _SignpPageState extends State<SignpPage> {
                   backgroundColor: Colors.white,
                   foregroundColor: Colors.black87,
                   minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30)),
                   side: const BorderSide(color: Colors.grey),
                 ),
                 onPressed: () {
-                  // Sin funcionalidad aún
+                  Usuario user = Usuario(nombre: nombre, password: contra, email: email);
+               
                 },
               ),
               const SizedBox(height: 24),

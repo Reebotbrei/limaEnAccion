@@ -25,7 +25,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: const Text('MENU'),
+
+        title: const Text('Menú principal', style: TextStyle(color: Color.fromARGB(255, 255, 243, 206))),
         
         actions: [
           // Botón de perfil
