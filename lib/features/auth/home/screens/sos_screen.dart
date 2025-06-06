@@ -28,10 +28,10 @@ class SosScreen extends StatelessWidget {
           EmergencyCard(
             title: 'Bomberos',
             number: '116',
-            icon: Icons.fire_truck,
+            icon: Icons.fire_truck, 
           ),
           EmergencyCard(
-            title: 'Policía Nacional del Perú',
+            title: 'Policía Nacional del Perú (PNP)',
             number: '105',
             icon: Icons.local_police,
           ),
@@ -72,11 +72,19 @@ class EmergencyCard extends StatelessWidget {
         ),
         onTap: () async {
           final Uri phoneUri = Uri(scheme: 'tel', path: number);
-          if (await canLaunchUrl(phoneUri)) {
-            await launchUrl(phoneUri);
-          } else {
+          try {
+            final bool launched = await launchUrl(
+              phoneUri,
+              mode: LaunchMode.externalApplication,
+            );
+            if (!launched) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('No se pudo iniciar la llamada')),
+              );
+            }
+          } catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('No se pudo iniciar la llamada')),
+              SnackBar(content: Text('Error al intentar llamar: $e')),
             );
           }
         },
