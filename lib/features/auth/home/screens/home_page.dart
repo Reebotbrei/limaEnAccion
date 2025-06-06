@@ -48,9 +48,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             Tab(text: 'NOTICIAS'),
             
           ],
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white60,
-          indicatorColor: Colors.white,
+          labelColor: Colors.black,
+          unselectedLabelColor: Colors.black,
+          indicatorColor: Colors.black,
         ),
       ),
 
@@ -92,7 +92,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.orange,
-        child: const Text('SOS'),
+        child: const Text('SOS',
+        style:TextStyle(color: Colors.black)),
+        
         onPressed: () {
           Navigator.push(
             context,
