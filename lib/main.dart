@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'features/auth/screens/login_page.dart';
+import 'features/auth/home/screens/sos_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const LoginPage(),
+      home: const SosScreen(),
     );
   }
 }

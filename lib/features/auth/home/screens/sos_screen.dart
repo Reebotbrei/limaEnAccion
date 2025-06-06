@@ -1,26 +1,27 @@
+
+import 'package:aplicacion_movil/features/auth/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class SosScreen extends StatelessWidget {
+  
   const SosScreen({super.key});
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: const Text('Líneas de Emergencia'),
-        leading: BackButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
+        title: const Center(
+            child: Text('Líneas de Emergencia',
+                style: TextStyle(
+                    color:  Color.fromARGB(255, 255, 242, 203),
+                    fontWeight: FontWeight.w600))),
       ),
       backgroundColor: const Color(0xFFFFF3E0),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
-        children: const [
-          EmergencyCard(
+        children: const [          EmergencyCard(
             title: 'Sistema de Atención Móvil de Urgencia SAMU',
             number: '106',
             icon: Icons.local_hospital,
@@ -28,7 +29,7 @@ class SosScreen extends StatelessWidget {
           EmergencyCard(
             title: 'Bomberos',
             number: '116',
-            icon: Icons.fire_truck, 
+            icon: Icons.fire_truck,
           ),
           EmergencyCard(
             title: 'Policía Nacional del Perú (PNP)',
@@ -39,6 +40,16 @@ class SosScreen extends StatelessWidget {
             title: 'Defensa Civil',
             number: '115',
             icon: Icons.shield,
+          ),
+          EmergencyCard(
+            title: 'Elias',
+            number: '927 073 539',
+            icon: Icons.shield,
+          ),
+          
+          SizedBox(height: 100),
+          CustomButton(
+            label: "Inicar Sesion",
           ),
         ],
       ),
