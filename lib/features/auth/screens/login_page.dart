@@ -142,7 +142,8 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => const ResetPasswordPage()),
                         );
                       },
-                      child: const Text('¿Olvidaste tu contraseña?'),
+                      child: const Text('¿Olvidaste tu contraseña?',
+                      style: TextStyle(color:Colors.orange),),
                     ),
                     const SizedBox(height: 16),
                     RichText(

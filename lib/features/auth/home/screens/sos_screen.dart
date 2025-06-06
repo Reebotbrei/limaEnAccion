@@ -44,7 +44,7 @@ class SosScreen extends StatelessWidget {
           EmergencyCard(
             title: 'Elias',
             number: '927 073 539',
-            icon: Icons.shield,
+            icon: Icons.account_circle,
           ),
           
           SizedBox(height: 100),

@@ -37,7 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(    
       backgroundColor: const Color(0xFFFFF3E0),
       appBar: AppBar(
         backgroundColor: Colors.orange,
@@ -83,8 +83,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 backgroundColor: Colors.orange,
               ),
               onPressed: _saveProfile,
-              icon: const Icon(Icons.save),
-              label: const Text('Guardar Cambios'),
+              icon: const Icon(Icons.save,
+              color: Colors.black,),
+              label: const Text('Guardar Cambio',
+              style: TextStyle(color:Colors.black),),
             ),
           ],
         ),
