@@ -1,8 +1,6 @@
-import 'package:aplicacion_movil/objetos/lista_usuarios.dart';
-import 'package:aplicacion_movil/objetos/usuario.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:aplicacion_movil/objetos/lista_usuarios.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/login_button.dart';
 
@@ -15,16 +13,10 @@ class SignpPage extends StatefulWidget {
 
 class _SignpPageState extends State<SignpPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   final _nameController = TextEditingController();
-  final nombre = TextEditingController().text;
-
   final _emailController = TextEditingController();
-  final email = TextEditingController().text;
-  
   final _passwordController = TextEditingController();
-  final contra = TextEditingController().text;
-
   final _confirmPasswordController = TextEditingController();
 
   @override
@@ -36,13 +28,46 @@ class _SignpPageState extends State<SignpPage> {
     super.dispose();
   }
 
-  void _onSignup() {
+  void _onSignup() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Cuenta creada con éxito. Inicia sesión.')),
-      );
-      Navigator.pop(context); // ← volver a login
+      final email = _emailController.text.trim();
+      final password = _passwordController.text.trim();
+
+      try {
+        // Crear usuario en Firebase
+        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Cuenta creada con éxito. Inicia sesión.'),
+          ),
+        );
+
+        Navigator.pop(context); // Volver a login
+
+      } on FirebaseAuthException catch (e) {
+        String mensaje;
+        if (e.code == 'email-already-in-use') {
+          mensaje = 'Ese correo ya está registrado.';
+        } else if (e.code == 'invalid-email') {
+          mensaje = 'El correo no es válido.';
+        } else if (e.code == 'weak-password') {
+          mensaje = 'La contraseña es demasiado débil.';
+        } else {
+          mensaje = 'Error: ${e.message}';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(mensaje)),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error inesperado: $e')),
+        );
+      }
     }
   }
 
@@ -71,64 +96,82 @@ class _SignpPageState extends State<SignpPage> {
                     color: Colors.orange[800]),
               ),
               const SizedBox(height: 32),
+
+              // Campo Nombre
               CustomTextField(
                 controller: _nameController,
                 labelText: 'Nombre completo',
                 prefixIcon: Icons.person_outline,
                 keyboardType: TextInputType.name,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Por favor ingresa tu nombre';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
+
+              // Campo Email
               CustomTextField(
                 controller: _emailController,
                 labelText: 'Correo electrónico',
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Por favor ingresa tu correo';
-                  final gmailRegex = RegExp(r'^[\w-\.]+@gmail\.com$');
-                  if (!gmailRegex.hasMatch(value))
+                  }
+                  final gmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                  if (!gmailRegex.hasMatch(value)) {
                     return 'Ingresa un correo válido de Gmail';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
+
+              // Campo Contraseña
               CustomTextField(
                 controller: _passwordController,
                 labelText: 'Contraseña',
                 prefixIcon: Icons.lock_outline,
                 obscureText: true,
                 validator: (value) {
-                  if (value == null || value.isEmpty)
+                  if (value == null || value.isEmpty) {
                     return 'Por favor ingresa una contraseña';
-                  if (value.length < 6)
+                  }
+                  if (value.length < 6) {
                     return 'La contraseña debe tener al menos 6 caracteres';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 16),
+
+              // Confirmar Contraseña
               CustomTextField(
                 controller: _confirmPasswordController,
                 labelText: 'Confirmar contraseña',
                 prefixIcon: Icons.lock_outline,
                 obscureText: true,
                 validator: (value) {
-                  if (value != _passwordController.text)
+                  if (value != _passwordController.text) {
                     return 'Las contraseñas no coinciden';
+                  }
                   return null;
                 },
               ),
               const SizedBox(height: 32),
+
+              // Botón crear cuenta
               LoginButton(
                 onPressed: _onSignup,
                 label: 'Crear Cuenta',
               ),
               const SizedBox(height: 16),
+
+              // Google (sin funcionalidad aún)
               ElevatedButton.icon(
                 icon: const Icon(Icons.login, color: Colors.red),
                 label: const Text('Registrarse con Google'),
@@ -141,11 +184,12 @@ class _SignpPageState extends State<SignpPage> {
                   side: const BorderSide(color: Colors.grey),
                 ),
                 onPressed: () {
-                  Usuario user = Usuario(nombre: nombre, password: contra, email: email);
-               
+                  // Google Sign-In opcional
                 },
               ),
               const SizedBox(height: 24),
+
+              // Enlace para volver al login
               RichText(
                 text: TextSpan(
                   text: '¿Ya tienes una cuenta? ',
