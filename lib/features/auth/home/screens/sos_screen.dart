@@ -49,7 +49,7 @@ class SosScreen extends StatelessWidget {
           
           SizedBox(height: 100),
           CustomButton(
-            label: "Inicar Sesion",
+            label: "Página Principal",
           ),
         ],
       ),

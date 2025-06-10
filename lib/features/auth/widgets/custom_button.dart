@@ -1,4 +1,3 @@
-import 'package:aplicacion_movil/features/auth/home/screens/home_page.dart';
 import 'package:aplicacion_movil/features/auth/screens/login_page.dart';
 import 'package:flutter/material.dart';
 
