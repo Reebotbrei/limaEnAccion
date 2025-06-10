@@ -1,5 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../home/screens/home_page.dart';
 import '../screens/reset_password_page.dart';
@@ -19,6 +20,7 @@ class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -27,14 +29,42 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _onLogin() {
-    if (_formKey.currentState!.validate()) {
+void _onLogin() async {
+  if (_formKey.currentState!.validate()) {
+    setState(() => _isLoading = true);
+
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text.trim(),
+      );
+
+      if (!mounted) return;
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
       );
+    } on FirebaseAuthException catch (_) {
+    
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text(
+            'Correo o contraseña inválidos',
+            style: TextStyle(fontSize: 15, color: Colors.white),
+          ),
+          backgroundColor: Colors.red[400],
+          behavior: SnackBarBehavior.floating,
+          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } finally {
+      setState(() => _isLoading = false);
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +77,7 @@ class _LoginPageState extends State<LoginPage> {
               Icon(Icons.shield_outlined, size: 80, color: Colors.orange[700]),
               const SizedBox(height: 16),
               Text(
-                'LIMA EN ACCION',
+                'LIMA EN ACCIÓN',
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -66,14 +96,14 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     CustomTextField(
                       controller: _emailController,
-                      labelText: 'Correo electrónico o teléfono',
+                      labelText: 'Correo electrónico',
                       prefixIcon: Icons.email_outlined,
                       keyboardType: TextInputType.emailAddress,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Por favor ingresa tu correo o teléfono';
+                          return 'Por favor ingresa tu correo';
                         }
-                        final gmailRegex = RegExp(r'^[\w-\.]+@gmail\.com$');
+                        final gmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
                         if (!gmailRegex.hasMatch(value)) {
                           return 'Ingresa un correo válido de Gmail';
                         }
@@ -110,13 +140,15 @@ class _LoginPageState extends State<LoginPage> {
                           return 'Por favor ingresa tu contraseña';
                         }
                         if (value.length < 6) {
-                          return 'La contraseña debe tener al menos 6 caracteres';
+                          return 'Debe tener al menos 6 caracteres';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 24),
-                    LoginButton(onPressed: _onLogin),
+                    _isLoading
+                        ? const CircularProgressIndicator()
+                        : LoginButton(onPressed: _onLogin),
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.login, color: Colors.red),
@@ -126,11 +158,12 @@ class _LoginPageState extends State<LoginPage> {
                         foregroundColor: Colors.black87,
                         minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30)),
+                          borderRadius: BorderRadius.circular(30),
+                        ),
                         side: const BorderSide(color: Colors.grey),
                       ),
                       onPressed: () {
-                        // Sin funcionalidad aún
+                        // Pendiente: Google Sign-In
                       },
                     ),
                     const SizedBox(height: 30),
@@ -142,15 +175,19 @@ class _LoginPageState extends State<LoginPage> {
                               builder: (context) => const ResetPasswordPage()),
                         );
                       },
-                      child: const Text('¿Olvidaste tu contraseña?',
-                      style: TextStyle(color:Colors.orange),),
+                      child: const Text(
+                        '¿Olvidaste tu contraseña?',
+                        style: TextStyle(color: Colors.orange),
+                      ),
                     ),
                     const SizedBox(height: 16),
                     RichText(
                       text: TextSpan(
                         text: '¿No tienes una cuenta? ',
                         style: const TextStyle(
-                            color: Colors.black87, fontSize: 14),
+                          color: Colors.black87,
+                          fontSize: 14,
+                        ),
                         children: [
                           TextSpan(
                             text: 'Regístrate',
@@ -164,7 +201,8 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const SignpPage()),
+                                    builder: (context) => const SignpPage(),
+                                  ),
                                 );
                               },
                           ),
