@@ -43,8 +43,9 @@ class _SignpPageState extends State<SignpPage> {
         );
         await FirebaseFirestore.instance
             .collection('Usuario')
-            .doc(usuario.user!.uid)
+            .doc(usuario.user!.uid) //este es el identificador de cada usuario en firestore :v
             .set({
+              'correo': email,
               'distrito': 'san juan',
               'nombre' : nombre
               });

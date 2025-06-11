@@ -1,7 +1,8 @@
+import 'package:aplicacion_movil/objetos/usuario.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../home/screens/home_page.dart';
 import '../screens/reset_password_page.dart';
 import '../widgets/login_button.dart';
@@ -29,42 +30,49 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-void _onLogin() async {
-  if (_formKey.currentState!.validate()) {
-    setState(() => _isLoading = true);
+  void _onLogin() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => _isLoading = true);
 
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: _emailController.text.trim(),
-        password: _passwordController.text.trim(),
-      );
+      try {
+        UserCredential usuarioParaIngreso =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+        );
 
-      if (!mounted) return;
+         DocumentSnapshot snapshot = await FirebaseFirestore.instance
+            .collection('Usuario')
+            .doc(usuarioParaIngreso.user!.uid)
+            .get();
+        Usuario usuario = Usuario.fromFirestore(snapshot);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
-    } on FirebaseAuthException catch (_) {
-    
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text(
-            'Correo o contraseña inválidos',
-            style: TextStyle(fontSize: 15, color: Colors.white),
+        if (!mounted) return;
+        
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage(usuario: usuario)),
+        );
+      } on FirebaseAuthException catch (_) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Correo o contraseña inválidos',
+              style: TextStyle(fontSize: 15, color: Colors.white),
+            ),
+            backgroundColor: Colors.red[400],
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            duration: const Duration(seconds: 3),
           ),
-          backgroundColor: Colors.red[400],
-          behavior: SnackBarBehavior.floating,
-          margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          duration: const Duration(seconds: 3),
-        ),
-      );
-    } finally {
-      setState(() => _isLoading = false);
+        );
+      } finally {
+        setState(() => _isLoading = false);
+      }
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -103,7 +111,8 @@ void _onLogin() async {
                         if (value == null || value.isEmpty) {
                           return 'Por favor ingresa tu correo';
                         }
-                        final gmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
+                        final gmailRegex =
+                            RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
                         if (!gmailRegex.hasMatch(value)) {
                           return 'Ingresa un correo válido de Gmail';
                         }

@@ -1,8 +1,9 @@
+import 'package:aplicacion_movil/objetos/usuario.dart';
 import 'package:flutter/material.dart';
 
 class ScreenInicio extends StatefulWidget {
-  
-  const ScreenInicio({super.key});
+  final Usuario usuario;
+  const ScreenInicio({super.key, required this.usuario});
 
   @override
   State<ScreenInicio> createState() => _ScreenInicio();
@@ -11,10 +12,10 @@ class ScreenInicio extends StatefulWidget {
 class _ScreenInicio extends State<ScreenInicio> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: SafeArea(
           child: Column(children: [
-        Text("Bienvenido " ),
+        Text("Bienvenido ${widget.usuario.nombre}"),
       ])),
     );
   }
