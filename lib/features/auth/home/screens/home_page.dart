@@ -1,3 +1,4 @@
+import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
 import 'package:flutter/material.dart';
 import 'sos_screen.dart';
 import '../../screens/profile_screen.dart';
@@ -61,7 +62,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
           child: TabBarView(
             controller: _tabController,
             children: const [
-              Center(child: Text('Inicio')),
+              Center(child: ScreenInicio()),
               Center(child: Text('Contenido de Reportar Delitos')),
               Center(child: Text('Contenido de Hacer Denuncias')),
               Center(child: Text('Noticias')),
