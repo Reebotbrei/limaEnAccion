@@ -11,17 +11,11 @@ class ScreenInicio extends StatefulWidget {
 class _ScreenInicio extends State<ScreenInicio> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return const Scaffold(
       body: SafeArea(
-        child: 
-          Column(children: [
-          Text(" hola munda"),
-        ]
-        )
-      ),
+          child: Column(children: [
+        Text("Bienvenido " ),
+      ])),
     );
   }
-} 
-
-
-
+}

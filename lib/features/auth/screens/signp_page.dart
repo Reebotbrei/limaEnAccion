@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/login_button.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignpPage extends StatefulWidget {
   const SignpPage({super.key});
@@ -32,14 +33,21 @@ class _SignpPageState extends State<SignpPage> {
     if (_formKey.currentState!.validate()) {
       final email = _emailController.text.trim();
       final password = _passwordController.text.trim();
+      final nombre = _nameController.text.trim();
 
       try {
         // Crear usuario en Firebase
-        await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        UserCredential usuario = await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
-
+        await FirebaseFirestore.instance
+            .collection('Usuario')
+            .doc(usuario.user!.uid)
+            .set({
+              'distrito': 'san juan',
+              'nombre' : nombre
+              });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('Cuenta creada con éxito. Inicia sesión.'),
@@ -47,7 +55,6 @@ class _SignpPageState extends State<SignpPage> {
         );
 
         Navigator.pop(context); // Volver a login
-
       } on FirebaseAuthException catch (e) {
         String mensaje;
         if (e.code == 'email-already-in-use') {
