@@ -31,7 +31,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const SosScreen(),
+      home: const SosScreen(mostrar: true),
     );
   }
 }

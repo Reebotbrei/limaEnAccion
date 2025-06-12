@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage>
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SosScreen()),
+            MaterialPageRoute(builder: (context) => const SosScreen(mostrar: false)),
           );
         },
       ),
