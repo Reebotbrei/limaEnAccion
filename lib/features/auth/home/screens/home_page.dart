@@ -1,3 +1,4 @@
+import 'package:aplicacion_movil/features/auth/home/screens/barrita_menu.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
 import 'package:aplicacion_movil/objetos/usuario.dart';
 import 'package:flutter/material.dart';
@@ -28,16 +29,9 @@ class _HomePageState extends State<HomePage>
       backgroundColor: const Color(0xFFFFF3E0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-
         backgroundColor: Colors.orange,
-        leading: IconButton(
-          icon: const Icon(Icons.menu),
-          onPressed: (){
-          },
-        ),
         title: const Text('Menú principal',
             style: TextStyle(color: Color.fromARGB(255, 255, 243, 206))),
-        
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -51,6 +45,7 @@ class _HomePageState extends State<HomePage>
           indicatorColor: Colors.black,
         ),
       ),
+      drawer: const Menu(),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
@@ -95,7 +90,8 @@ class _HomePageState extends State<HomePage>
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SosScreen(mostrar: false)),
+            MaterialPageRoute(
+                builder: (context) => const SosScreen(mostrar: false)),
           );
         },
       ),

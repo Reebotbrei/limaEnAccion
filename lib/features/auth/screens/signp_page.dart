@@ -45,7 +45,7 @@ class _SignpPageState extends State<SignpPage> {
             .collection('Usuario')
             .doc(usuario.user!.uid) //este es el identificador de cada usuario en firestore :v
             .set({
-              'correo': email,
+              'email': email,
               'distrito': 'san juan',
               'nombre' : nombre
               });

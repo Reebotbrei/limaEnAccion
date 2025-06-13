@@ -10,6 +10,7 @@ class Usuario {
   factory Usuario.fromFirestore(DocumentSnapshot doc) {
     final dataFromJsonFireStore = doc.data() as Map<String, dynamic>;
     return Usuario(
+      //XD
       nombre: dataFromJsonFireStore['nombre'],
       distrito: dataFromJsonFireStore['distrito'],
       email: dataFromJsonFireStore['email'],
