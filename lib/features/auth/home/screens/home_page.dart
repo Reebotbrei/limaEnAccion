@@ -28,21 +28,16 @@ class _HomePageState extends State<HomePage>
       backgroundColor: const Color(0xFFFFF3E0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
+
         backgroundColor: Colors.orange,
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: (){
+          },
+        ),
         title: const Text('Menú principal',
             style: TextStyle(color: Color.fromARGB(255, 255, 243, 206))),
-        actions: [
-          // Botón de perfil
-          IconButton(
-            icon: const Icon(Icons.account_circle),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
-            },
-          ),
-        ],
+        
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -63,9 +58,9 @@ class _HomePageState extends State<HomePage>
             controller: _tabController,
             children: [
               Center(child: ScreenInicio(usuario: widget.usuario)),
-              Center(child: Text('Contenido de Reportar Delitos')),
-              Center(child: Text('Contenido de Hacer Denuncias')),
-              Center(child: Text('Noticias')),
+              const Center(child: Text('Contenido de Reportar Delitos')),
+              const Center(child: Text('Contenido de Hacer Denuncias')),
+              const Center(child: Text('Noticias')),
             ],
           ),
         ),
