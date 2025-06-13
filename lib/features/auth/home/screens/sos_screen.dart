@@ -27,7 +27,7 @@ class SosScreen extends StatelessWidget {
             icon: Icons.local_hospital,
           ),
           const  EmergencyCard(
-            title: 'Bomberos',
+            title: 'Bombero',
             number: '116',
             icon: Icons.fire_truck,
           ),
