@@ -25,9 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  final FirestoreService _firestoreService = FirestoreService();
-  
-  
+
   bool _isPasswordVisible = false;
   bool _isLoading = false;
 
@@ -39,34 +37,34 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _onLogin() async {
-    if (_formKey.currentState!.validate()) {
-      setState(() => _isLoading = true);
+    if (!_formKey.currentState!.validate()) return;
 
-      try {
-        final cred = await AuthService.loginWithEmail(
-          _emailController.text.trim(),
-          _passwordController.text.trim(),
+    setState(() => _isLoading = true);
+
+    try {
+      final cred = await AuthService.loginWithEmail(
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+      );
+
+      final usuario = await FirestoreService.getUsuario(cred.user!.uid);
+
+      if (!mounted) return;
+
+      if (usuario != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => HomePage(usuario: usuario)),
         );
-
-        final usuario = await FirestoreService.getUsuario(cred.user!.uid);
-
-
-
-        if (!mounted) return;
-
-        if (usuario != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (_) => HomePage(usuario: usuario)),
-          );
-        } else {
-          _showError('No se encontraron los datos del usuario');
-        }
-      } on FirebaseAuthException catch (_) {
-        _showError('Correo o contraseña inválidos');
-      } finally {
-        setState(() => _isLoading = false);
+      } else {
+        _showError('No se encontraron los datos del usuario.');
       }
+    } on FirebaseAuthException {
+      _showError('Correo o contraseña inválidos.');
+    } catch (e) {
+      _showError('Error inesperado: ${e.toString()}');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -85,11 +83,11 @@ class _LoginPageState extends State<LoginPage> {
             MaterialPageRoute(builder: (_) => HomePage(usuario: usuario)),
           );
         } else {
-          _showError('Usuario no registrado en Firestore');
+          _showError('Usuario no registrado en Firestore.');
         }
       }
-    } catch (e) {
-      _showError('Error al iniciar sesión con Google');
+    } catch (_) {
+      _showError('Error al iniciar sesión con Google.');
     }
   }
 
@@ -97,7 +95,7 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message, style: const TextStyle(color: Colors.white)),
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.red.shade700,
         behavior: SnackBarBehavior.floating,
         duration: const Duration(seconds: 3),
       ),
@@ -110,7 +108,7 @@ class _LoginPageState extends State<LoginPage> {
       backgroundColor: AppColors.background,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(32.0),
+          padding: const EdgeInsets.all(32),
           child: Column(
             children: [
               Icon(Icons.shield_outlined, size: 80, color: AppColors.primary),
@@ -129,6 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(fontSize: 16, color: Colors.grey),
               ),
               const SizedBox(height: 32),
+
+              // FORMULARIO
               Form(
                 key: _formKey,
                 child: Column(
@@ -148,9 +148,11 @@ class _LoginPageState extends State<LoginPage> {
                         labelText: 'Contraseña',
                         prefixIcon: const Icon(Icons.lock_outline),
                         suffixIcon: IconButton(
-                          icon: Icon(_isPasswordVisible
-                              ? Icons.visibility_off
-                              : Icons.visibility),
+                          icon: Icon(
+                            _isPasswordVisible
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                          ),
                           onPressed: () {
                             setState(() {
                               _isPasswordVisible = !_isPasswordVisible;
@@ -182,8 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => const ResetPasswordPage(),
-                          ),
+                              builder: (_) => const ResetPasswordPage()),
                         );
                       },
                       child: Text(
@@ -208,8 +209,7 @@ class _LoginPageState extends State<LoginPage> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => const SignupPage(),
-                                  ),
+                                      builder: (_) => const SignupPage()),
                                 );
                               },
                           ),

@@ -5,7 +5,8 @@ import 'package:aplicacion_movil/shared/theme/app_colors.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/profile_screen.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/sos_screen.dart';
-import '../screens/barrita_menu.dart';
+import 'package:aplicacion_movil/features/auth/home/screens/barrita_menu.dart';
+import '/shared/widgets/no_hero_fab.dart';
 
 class HomePage extends StatefulWidget {
   final Usuario usuario;
@@ -15,14 +16,19 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose(); // Liberar recursos
+    super.dispose();
   }
 
   @override
@@ -56,7 +62,7 @@ class _HomePageState extends State<HomePage>
           child: TabBarView(
             controller: _tabController,
             children: [
-              Center(child: ScreenInicio(usuario: widget.usuario)),
+              ScreenInicio(usuario: widget.usuario),
               const Center(child: Text('Contenido de Reportar Delitos')),
               const Center(child: Text('Contenido de Hacer Denuncias')),
               const Center(child: Text('Noticias')),
@@ -72,34 +78,43 @@ class _HomePageState extends State<HomePage>
           children: [
             IconButton(
               icon: const Icon(Icons.home, color: AppColors.primary),
-              onPressed: () {},
+              onPressed: () {
+                _tabController.animateTo(0); // Navega a INICIO
+              },
             ),
-            IconButton(icon: const Icon(Icons.report), onPressed: () {}),
-            const SizedBox(width: 40),
-            IconButton(icon: const Icon(Icons.map), onPressed: () {}),
+            IconButton(
+              icon: const Icon(Icons.report),
+              onPressed: () {
+                _tabController.animateTo(1);
+              },
+            ),
+            const SizedBox(width: 40), // espacio para el FAB
+            IconButton(
+              icon: const Icon(Icons.map),
+              onPressed: () {
+                // Aquí puedes añadir lógica para el mapa
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.person),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (context) => const ProfileScreen(),
-                  ),
+                  MaterialPageRoute(builder: (_) => ProfileScreen()),
                 );
               },
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'fab_sos', // 🛠️ Hero tag único
+      floatingActionButton: NoHeroFloatingActionButton(
         backgroundColor: AppColors.primary,
         child: const Text('SOS', style: TextStyle(color: Colors.black)),
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const SosScreen(mostrar: false),
+              builder: (_) => const SosScreen(mostrar: false),
             ),
           );
         },
