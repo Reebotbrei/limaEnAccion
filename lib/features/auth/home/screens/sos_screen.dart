@@ -1,6 +1,8 @@
-import 'package:aplicacion_movil/shared/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import '/shared/theme/app_colors.dart';
+import '/shared/widgets/custom_button.dart';
 
 class SosScreen extends StatelessWidget {
   final bool mostrar;
@@ -11,17 +13,17 @@ class SosScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
         title: const Text(
           'Líneas de Emergencia',
           style: TextStyle(
-            color: Color.fromARGB(255, 78, 64, 24),
+            color: AppColors.primary,
             fontWeight: FontWeight.w600,
           ),
         ),
         centerTitle: true,
       ),
-      backgroundColor: const Color(0xFFFFF3E0),
+      backgroundColor: AppColors.background,
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
@@ -54,9 +56,7 @@ class SosScreen extends StatelessWidget {
           if (mostrar)
             CustomButton(
               label: "Página Principal",
-              onPressed: () {
-                Navigator.pop(context); // O reemplaza por HomePage() si prefieres
-              },
+              onPressed: () => Navigator.pop(context),
             ),
         ],
       ),
@@ -82,8 +82,11 @@ class EmergencyCard extends StatelessWidget {
       elevation: 3,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: ListTile(
-        leading: Icon(icon, color: Colors.orange, size: 36),
-        title: Text(title),
+        leading: Icon(icon, color: AppColors.primary, size: 36),
+        title: Text(
+          title,
+          style: const TextStyle(fontWeight: FontWeight.w500),
+        ),
         subtitle: Text(
           number,
           style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),

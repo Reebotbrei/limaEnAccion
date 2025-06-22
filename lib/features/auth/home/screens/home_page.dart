@@ -7,7 +7,6 @@ import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/sos_screen.dart';
 import '../screens/barrita_menu.dart';
 
-
 class HomePage extends StatefulWidget {
   final Usuario usuario;
   const HomePage({super.key, required this.usuario});
@@ -72,8 +71,9 @@ class _HomePageState extends State<HomePage>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-                icon: const Icon(Icons.home, color: AppColors.primary),
-                onPressed: () {}),
+              icon: const Icon(Icons.home, color: AppColors.primary),
+              onPressed: () {},
+            ),
             IconButton(icon: const Icon(Icons.report), onPressed: () {}),
             const SizedBox(width: 40),
             IconButton(icon: const Icon(Icons.map), onPressed: () {}),
@@ -83,7 +83,8 @@ class _HomePageState extends State<HomePage>
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                      builder: (context) => const ProfileScreen()),
+                    builder: (context) => const ProfileScreen(),
+                  ),
                 );
               },
             ),
@@ -91,13 +92,15 @@ class _HomePageState extends State<HomePage>
         ),
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'fab_sos', // 🛠️ Hero tag único
         backgroundColor: AppColors.primary,
         child: const Text('SOS', style: TextStyle(color: Colors.black)),
         onPressed: () {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const SosScreen(mostrar: false)),
+              builder: (context) => const SosScreen(mostrar: false),
+            ),
           );
         },
       ),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 import 'firebase_options.dart';
-import 'features/emergency/screens/sos_screen.dart';
+import 'features/auth/home/screens/sos_screen.dart';
 import 'shared/theme/app_theme.dart';
 
 void main() async {
