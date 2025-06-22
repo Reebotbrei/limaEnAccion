@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:aplicacion_movil/objetos/usuario.dart';
 import 'package:aplicacion_movil/shared/theme/app_colors.dart';
+
 import 'package:aplicacion_movil/features/auth/home/screens/profile_screen.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
 import 'package:aplicacion_movil/features/auth/home/screens/sos_screen.dart';
-//import 'package:aplicacion_movil/features/auth/home/screens/menu/barrita_menu.dart';
+import '../screens/barrita_menu.dart';
+
 
 class HomePage extends StatefulWidget {
   final Usuario usuario;

@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import '../../../shared/widgets/custom_text_field.dart'; // Asegúrate de tener este import si usas el widget personalizado
 
 class ResetPasswordPage extends StatefulWidget {
   const ResetPasswordPage({super.key});
@@ -10,13 +12,35 @@ class ResetPasswordPage extends StatefulWidget {
 class _ResetPasswordPageState extends State<ResetPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
+  bool _isSending = false;
 
-  void _onResetPassword() {
+  @override
+  void dispose() {
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _onResetPassword() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Se ha enviado un enlace para restablecer tu contraseña')),
-      );
-      Navigator.pop(context); // Vuelve al login
+      setState(() => _isSending = true);
+      try {
+        await FirebaseAuth.instance.sendPasswordResetEmail(
+          email: _emailController.text.trim(),
+        );
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Se ha enviado un enlace para restablecer tu contraseña'),
+          ),
+        );
+        Navigator.pop(context);
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Ocurrió un error: $e')),
+        );
+      } finally {
+        setState(() => _isSending = false);
+      }
     }
   }
 
@@ -42,16 +66,13 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 style: TextStyle(fontSize: 16, color: Colors.black87),
               ),
               const SizedBox(height: 32),
-              TextFormField(
+
+              // Usando el CustomTextField para mantener consistencia
+              CustomTextField(
                 controller: _emailController,
+                labelText: 'Correo electrónico',
+                prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(
-                  labelText: 'Correo electrónico',
-                  prefixIcon: Icon(Icons.email_outlined),
-                  border: OutlineInputBorder(),
-                  filled: true,
-                  fillColor: Colors.white,
-                ),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa tu correo';
@@ -64,15 +85,22 @@ class _ResetPasswordPageState extends State<ResetPasswordPage> {
                 },
               ),
               const SizedBox(height: 24),
-              ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.orange,
-                  minimumSize: const Size(double.infinity, 50),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+
+              // Botón de envío con estado de carga
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.orange,
+                    minimumSize: const Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                  icon: const Icon(Icons.send),
+                  label: Text(_isSending ? 'Enviando...' : 'Enviar enlace'),
+                  onPressed: _isSending ? null : _onResetPassword,
                 ),
-                icon: const Icon(Icons.send),
-                label: const Text('Enviar enlace'),
-                onPressed: _onResetPassword,
               ),
             ],
           ),

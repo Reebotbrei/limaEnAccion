@@ -1,4 +1,4 @@
-import 'package:aplicacion_movil/features/auth/widgets/custom_button.dart';
+import 'package:aplicacion_movil/shared/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 

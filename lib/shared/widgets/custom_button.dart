@@ -1,31 +1,32 @@
-import 'package:aplicacion_movil/features/auth/screens/login_page.dart';
 import 'package:flutter/material.dart';
+import 'package:aplicacion_movil/shared/theme/app_colors.dart';
 
 class CustomButton extends StatelessWidget {
-  final String? label;
+  final String label;
+  final VoidCallback? onPressed;
 
-  const CustomButton({super.key, this.label});
+  const CustomButton({
+    super.key,
+    required this.label,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          
-          backgroundColor: Colors.orange[700],
-          foregroundColor: Colors.white,
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.white,
           padding: const EdgeInsets.symmetric(vertical: 16),
-          textStyle: const TextStyle(fontSize: 18),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
-        onPressed: (){
-          Navigator.push(
-            context, MaterialPageRoute(builder: (context) => LoginPage()),
-          );
-        },
-        child: Text(label.toString()),
+        child: Text(label),
       ),
     );
   }

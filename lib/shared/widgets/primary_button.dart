@@ -1,32 +1,51 @@
 import 'package:flutter/material.dart';
-import '../../../theme/app_colors.dart';
+import 'package:aplicacion_movil/shared/theme/app_colors.dart';
 
-class LoginButton extends StatelessWidget {
+class PrimaryButton extends StatelessWidget {
+  final String text;
   final VoidCallback onPressed;
-  final String label;
+  final bool isExpanded;
+  final IconData? icon;
+  final Color? backgroundColor;
+  final Color? foregroundColor;
+  final double borderRadius;
 
-  const LoginButton({
+  const PrimaryButton({
     super.key,
+    required this.text,
     required this.onPressed,
-    this.label = 'Iniciar Sesión',
+    this.isExpanded = true,
+    this.icon,
+    this.backgroundColor,
+    this.foregroundColor,
+    this.borderRadius = 12.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    final bgColor = backgroundColor ?? AppColors.primary;
+    final fgColor = foregroundColor ?? AppColors.primary;
+
     return SizedBox(
-      width: double.infinity,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primaryDark,
-          foregroundColor: Colors.white,
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          textStyle: const TextStyle(fontSize: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(30),
-          ),
+      width: isExpanded ? double.infinity : null,
+      height: 50,
+      child: ElevatedButton.icon(
+        icon:
+            icon != null ? Icon(icon, color: fgColor) : const SizedBox.shrink(),
+        label: Text(
+          text,
+          style: TextStyle(
+              fontSize: 16, fontWeight: FontWeight.bold, color: fgColor),
         ),
         onPressed: onPressed,
-        child: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: bgColor,
+          foregroundColor: fgColor,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(borderRadius),
+          ),
+          elevation: 2,
+        ),
       ),
     );
   }

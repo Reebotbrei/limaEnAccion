@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../widgets/custom_text_field.dart';
+
+import '/shared/theme/app_colors.dart';
+import '/shared/widgets/custom_text_field.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -22,10 +24,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
 
-    // Simulación: usar datos del usuario actual (si estás usando Firebase Auth)
+    // Datos simulados del usuario
     final user = FirebaseAuth.instance.currentUser;
-    _nameController.text = user?.displayName ?? ' ';
-    _emailController.text = user?.email ?? ' ';
+    _nameController.text = user?.displayName ?? '';
+    _emailController.text = user?.email ?? '';
   }
 
   @override
@@ -57,9 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final name = _nameController.text.trim();
       final email = _emailController.text.trim();
 
-      // Aquí puedes guardar en Firestore o local
-      // Por ahora solo se simula
-      await Future.delayed(const Duration(seconds: 1)); // Simula espera de red
+      await Future.delayed(const Duration(seconds: 1)); // Simulación
 
       setState(() => _isSaving = false);
 
@@ -72,11 +72,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF3E0),
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
+        foregroundColor: AppColors.secondary,
         title: const Text('Editar Perfil'),
-        leading: const BackButton(),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -90,9 +90,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: CircleAvatar(
                     radius: 50,
                     backgroundImage: _imageFile != null ? FileImage(_imageFile!) : null,
-                    backgroundColor: Colors.orange.shade100,
+                    backgroundColor: AppColors.primary.withOpacity(0.2),
                     child: _imageFile == null
-                        ? const Icon(Icons.person, size: 50, color: Colors.orange)
+                        ? const Icon(Icons.person, size: 50, color: AppColors.primary)
                         : null,
                   ),
                 ),
@@ -103,12 +103,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 controller: _nameController,
                 labelText: 'Nombre',
                 prefixIcon: Icons.person_outline,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'Por favor ingresa tu nombre';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    value == null || value.trim().isEmpty ? 'Por favor ingresa tu nombre' : null,
               ),
               const SizedBox(height: 16),
 
@@ -134,14 +130,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 width: double.infinity,
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
+                    backgroundColor: AppColors.primary,
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                   ),
-                  icon: const Icon(Icons.save, color: Colors.black),
+                  icon: const Icon(Icons.save, color: AppColors.secondary),
                   label: Text(
                     _isSaving ? 'Guardando...' : 'Guardar Cambios',
-                    style: const TextStyle(color: Colors.black),
+                    style: const TextStyle(color: AppColors.secondary),
                   ),
                   onPressed: _isSaving ? null : _saveProfile,
                 ),

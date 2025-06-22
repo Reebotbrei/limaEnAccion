@@ -53,8 +53,10 @@ class AuthService {
 
       // Verificar si el usuario ya existe en Firestore
       final uid = userCredential.user!.uid;
-      final existingUser = await _firestore.getUser(uid);
+      final existingUser = await FirestoreService.getUsuario(uid);
+      //final usuario = await FirestoreService.getUsuario(cred.user!.uid);
 
+      
       if (existingUser == null) {
         final newUser = Usuario(
           uid: uid,

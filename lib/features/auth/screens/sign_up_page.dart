@@ -1,11 +1,12 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:aplicacion_movil/features/auth/home/screens/home_page.dart';
+
 
 import '../../../shared/widgets/custom_text_field.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../../shared/theme/app_colors.dart';
-import '/shared/utils/validators.dart';
 import '../../../services/auth_service.dart';
 import '../../../services/firestore_service.dart';
 import '../../../shared/utils/validators.dart';
@@ -84,7 +85,7 @@ class _SignupPageState extends State<SignupPage> {
       final cred = await AuthService.signInWithGoogle();
 
       if (cred != null && cred.user != null) {
-        final usuario = await FirestoreService().getUser(cred.user!.uid);
+        final usuario = await FirestoreService.getUsuario(cred.user!.uid);
 
         if (!mounted) return;
 
