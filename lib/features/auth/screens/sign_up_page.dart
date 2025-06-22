@@ -1,24 +1,29 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/login_button.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-class SignpPage extends StatefulWidget {
-  const SignpPage({super.key});
+import '../../../shared/widgets/custom_text_field.dart';
+import '../../../shared/widgets/primary_button.dart';
+import '../../../shared/theme/app_colors.dart';
+import '/shared/utils/validators.dart';
+import '../../../services/auth_service.dart';
+import '../../../services/firestore_service.dart';
+import '../../../shared/utils/validators.dart';
+
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<SignpPage> createState() => _SignpPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignpPageState extends State<SignpPage> {
+class _SignupPageState extends State<SignupPage> {
   final _formKey = GlobalKey<FormState>();
-
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -29,43 +34,36 @@ class _SignpPageState extends State<SignpPage> {
     super.dispose();
   }
 
-  void _onSignup() async {
+  Future<void> _onSignup() async {
     if (_formKey.currentState!.validate()) {
-      final email = _emailController.text.trim();
-      final password = _passwordController.text.trim();
-      final nombre = _nameController.text.trim();
+      setState(() => _isLoading = true);
 
       try {
-        // Crear usuario en Firebase
-        UserCredential usuario = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: email,
-          password: password,
-        );
-        await FirebaseFirestore.instance
-            .collection('Usuario')
-            .doc(usuario.user!.uid) //este es el identificador de cada usuario en firestore :v
-            .set({
-              'email': email,
-              'distrito': 'san juan',
-              'nombre' : nombre
-              });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Cuenta creada con éxito. Inicia sesión.'),
-          ),
+        await AuthService.signupWithEmail(
+          email: _emailController.text.trim(),
+          password: _passwordController.text.trim(),
+          nombre: _nameController.text.trim(),
         );
 
-        Navigator.pop(context); // Volver a login
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Cuenta creada con éxito. Inicia sesión.')),
+        );
+        Navigator.pop(context); // Regresa al login
       } on FirebaseAuthException catch (e) {
         String mensaje;
-        if (e.code == 'email-already-in-use') {
-          mensaje = 'Ese correo ya está registrado.';
-        } else if (e.code == 'invalid-email') {
-          mensaje = 'El correo no es válido.';
-        } else if (e.code == 'weak-password') {
-          mensaje = 'La contraseña es demasiado débil.';
-        } else {
-          mensaje = 'Error: ${e.message}';
+        switch (e.code) {
+          case 'email-already-in-use':
+            mensaje = 'Ese correo ya está registrado.';
+            break;
+          case 'invalid-email':
+            mensaje = 'El correo no es válido.';
+            break;
+          case 'weak-password':
+            mensaje = 'La contraseña es demasiado débil.';
+            break;
+          default:
+            mensaje = 'Error: ${e.message}';
         }
 
         ScaffoldMessenger.of(context).showSnackBar(
@@ -75,17 +73,53 @@ class _SignpPageState extends State<SignpPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error inesperado: $e')),
         );
+      } finally {
+        setState(() => _isLoading = false);
       }
+    }
+  }
+
+  Future<void> _onGoogleSignup() async {
+    try {
+      final cred = await AuthService.signInWithGoogle();
+
+      if (cred != null && cred.user != null) {
+        final usuario = await FirestoreService().getUser(cred.user!.uid);
+
+        if (!mounted) return;
+
+        if (usuario != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (_) => HomePage(usuario: usuario),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('No se pudo recuperar la información del usuario.'),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al iniciar sesión con Google: $e')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Crear Cuenta'),
-        backgroundColor: Colors.orange[700],
+        backgroundColor: AppColors.primary,
         elevation: 0,
+        foregroundColor: AppColors.primary,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(32.0),
@@ -94,70 +128,43 @@ class _SignpPageState extends State<SignpPage> {
           child: Column(
             children: [
               Icon(Icons.person_add_alt_1_outlined,
-                  size: 80, color: Colors.orange[700]),
+                  size: 80, color: AppColors.primary),
               const SizedBox(height: 16),
               Text(
                 'Regístrate para continuar',
                 style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange[800]),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.primary,
+                ),
               ),
               const SizedBox(height: 32),
-
-              // Campo Nombre
               CustomTextField(
                 controller: _nameController,
                 labelText: 'Nombre completo',
                 prefixIcon: Icons.person_outline,
                 keyboardType: TextInputType.name,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa tu nombre';
-                  }
-                  return null;
-                },
+                validator: (value) =>
+                    value == null || value.isEmpty ? 'Ingresa tu nombre' : null,
               ),
               const SizedBox(height: 16),
-
-              // Campo Email
               CustomTextField(
                 controller: _emailController,
                 labelText: 'Correo electrónico',
                 prefixIcon: Icons.email_outlined,
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa tu correo';
-                  }
-                  final gmailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@gmail\.com$');
-                  if (!gmailRegex.hasMatch(value)) {
-                    return 'Ingresa un correo válido de Gmail';
-                  }
-                  return null;
-                },
+                validator: FormValidators.validateEmail,
+
               ),
               const SizedBox(height: 16),
-
-              // Campo Contraseña
               CustomTextField(
                 controller: _passwordController,
                 labelText: 'Contraseña',
                 prefixIcon: Icons.lock_outline,
                 obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingresa una contraseña';
-                  }
-                  if (value.length < 6) {
-                    return 'La contraseña debe tener al menos 6 caracteres';
-                  }
-                  return null;
-                },
+               validator: FormValidators.validatePassword,
               ),
               const SizedBox(height: 16),
-
-              // Confirmar Contraseña
               CustomTextField(
                 controller: _confirmPasswordController,
                 labelText: 'Confirmar contraseña',
@@ -171,15 +178,13 @@ class _SignpPageState extends State<SignpPage> {
                 },
               ),
               const SizedBox(height: 32),
-
-              // Botón crear cuenta
-              LoginButton(
-                onPressed: _onSignup,
-                label: 'Crear Cuenta',
-              ),
+              _isLoading
+                  ? const CircularProgressIndicator()
+                  : PrimaryButton(
+                      text: 'Crear Cuenta',
+                      onPressed: _onSignup,
+                    ),
               const SizedBox(height: 16),
-
-              // Google (sin funcionalidad aún)
               ElevatedButton.icon(
                 icon: const Icon(Icons.login, color: Colors.red),
                 label: const Text('Registrarse con Google'),
@@ -191,13 +196,9 @@ class _SignpPageState extends State<SignpPage> {
                       borderRadius: BorderRadius.circular(30)),
                   side: const BorderSide(color: Colors.grey),
                 ),
-                onPressed: () {
-                  // Google Sign-In opcional
-                },
+                onPressed: _onGoogleSignup,
               ),
               const SizedBox(height: 24),
-
-              // Enlace para volver al login
               RichText(
                 text: TextSpan(
                   text: '¿Ya tienes una cuenta? ',
@@ -206,7 +207,7 @@ class _SignpPageState extends State<SignpPage> {
                     TextSpan(
                       text: 'Inicia sesión',
                       style: TextStyle(
-                        color: Colors.orange[700],
+                        color: AppColors.primary,
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),

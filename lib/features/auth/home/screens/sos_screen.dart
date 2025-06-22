@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 class SosScreen extends StatelessWidget {
   final bool mostrar;
+
   const SosScreen({super.key, required this.mostrar});
 
   @override
@@ -11,11 +12,14 @@ class SosScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.orange,
-        title: const Center(
-            child: Text('Líneas de Emergencia',
-                style: TextStyle(
-                    color: Color.fromARGB(255, 255, 242, 203),
-                    fontWeight: FontWeight.w600))),
+        title: const Text(
+          'Líneas de Emergencia',
+          style: TextStyle(
+            color: Color.fromARGB(255, 78, 64, 24),
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        centerTitle: true,
       ),
       backgroundColor: const Color(0xFFFFF3E0),
       body: ListView(
@@ -26,8 +30,8 @@ class SosScreen extends StatelessWidget {
             number: '106',
             icon: Icons.local_hospital,
           ),
-          const  EmergencyCard(
-            title: 'Bombero',
+          const EmergencyCard(
+            title: 'Bomberos',
             number: '116',
             icon: Icons.fire_truck,
           ),
@@ -46,11 +50,14 @@ class SosScreen extends StatelessWidget {
             number: '927 073 539',
             icon: Icons.account_circle,
           ),
-          const  SizedBox(height: 100),
+          const SizedBox(height: 100),
           if (mostrar)
-              const  CustomButton(
-                label: "Página Principal",
-              ),
+            CustomButton(
+              label: "Página Principal",
+              onPressed: () {
+                Navigator.pop(context); // O reemplaza por HomePage() si prefieres
+              },
+            ),
         ],
       ),
     );

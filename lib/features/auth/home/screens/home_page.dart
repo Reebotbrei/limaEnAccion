@@ -1,9 +1,10 @@
-import 'package:aplicacion_movil/features/auth/home/screens/barrita_menu.dart';
-import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
-import 'package:aplicacion_movil/objetos/usuario.dart';
 import 'package:flutter/material.dart';
-import 'sos_screen.dart';
-import '../../screens/profile_screen.dart';
+import 'package:aplicacion_movil/objetos/usuario.dart';
+import 'package:aplicacion_movil/shared/theme/app_colors.dart';
+import 'package:aplicacion_movil/features/auth/home/screens/profile_screen.dart';
+import 'package:aplicacion_movil/features/auth/home/screens/screen_inicio.dart';
+import 'package:aplicacion_movil/features/auth/home/screens/sos_screen.dart';
+//import 'package:aplicacion_movil/features/auth/home/screens/menu/barrita_menu.dart';
 
 class HomePage extends StatefulWidget {
   final Usuario usuario;
@@ -20,18 +21,20 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this); // 3 pestañas
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFFF3E0),
+      backgroundColor: AppColors.background,
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: Colors.orange,
-        title: const Text('Menú principal',
-            style: TextStyle(color: Color.fromARGB(255, 255, 243, 206))),
+        backgroundColor: AppColors.primary,
+        title: const Text(
+          'Menú principal',
+          style: TextStyle(color: AppColors.secondary),
+        ),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -41,7 +44,7 @@ class _HomePageState extends State<HomePage>
             Tab(text: 'NOTICIAS'),
           ],
           labelColor: Colors.black,
-          unselectedLabelColor: Colors.black,
+          unselectedLabelColor: Colors.black54,
           indicatorColor: Colors.black,
         ),
       ),
@@ -67,25 +70,26 @@ class _HomePageState extends State<HomePage>
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             IconButton(
-                icon: const Icon(Icons.home, color: Colors.orange),
+                icon: const Icon(Icons.home, color: AppColors.primary),
                 onPressed: () {}),
             IconButton(icon: const Icon(Icons.report), onPressed: () {}),
-            const SizedBox(width: 40), // espacio para el botón flotante
+            const SizedBox(width: 40),
             IconButton(icon: const Icon(Icons.map), onPressed: () {}),
             IconButton(
-                icon: const Icon(Icons.person),
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfileScreen()),
-                  );
-                }),
+              icon: const Icon(Icons.person),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
+                );
+              },
+            ),
           ],
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.orange,
+        backgroundColor: AppColors.primary,
         child: const Text('SOS', style: TextStyle(color: Colors.black)),
         onPressed: () {
           Navigator.push(
